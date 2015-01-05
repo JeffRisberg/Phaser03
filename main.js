@@ -1,81 +1,82 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'Phaser03',
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example',
     {
         preload: preload,
         create: create,
-        update: update,
-        render: render
-    }
-);
-
-function preload() {
-    game.load.tilemap('map', 'assets/tilemaps/csv/catastrophi_level.csv', null, Phaser.Tilemap.CSV);
-    game.load.image('tiles', 'assets/tilemaps/tiles/catastrophi_tiles_16.png');
-    game.load.image('player', 'assets/sprites/tinycar.png');
-}
+        update: update
+    });
 
 var map;
 var layer;
+
+var sprite;
 var cursors;
-var player;
+
+function preload() {
+    game.load.tilemap('map', 'assets/tilemaps/maps/tile_collision_test.json', null, Phaser.Tilemap.TILED_JSON);
+
+    game.load.image('ground_1x1', 'assets/tilemaps/tiles/ground_1x1.png');
+    game.load.image('phaser', 'assets/sprites/arrow.png');
+
+    game.load.spritesheet('coin', 'assets/sprites/coin.png', 32, 32);
+}
 
 function create() {
-    game.physics.startSystem(Phaser.Physics.P2JS);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    //  Because we're loading CSV map data we have to specify the tile size here or we can't render it
-    map = game.add.tilemap('map', 16, 16);
+    map = game.add.tilemap('map');
 
-    //  Now add in the tileset
-    map.addTilesetImage('tiles');
+    map.addTilesetImage('ground_1x1');
+    map.addTilesetImage('coin');
 
-    //  Create our layer
-    layer = map.createLayer(0);
+    map.setCollisionBetween(1, 2);
 
-    //  Resize the world
+    //  This will set Tile ID 26 (the coin) to call the hitCoin function when collided with
+    map.setTileIndexCallback(3, hitCoin, this);
+
+    layer = map.createLayer('Tile Layer 1');
+
     layer.resizeWorld();
 
-    //  This isn't totally accurate, but it'll do for now
-    map.setCollisionBetween(54, 83);
+    sprite = game.add.sprite(260, 100, 'phaser');
+    sprite.anchor.set(0.5);
+    game.physics.enable(sprite);
 
-    //  Convert the tilemap layer into bodies. Only tiles that collide (see above) are created.
-    //  This call returns an array of body objects which you can perform addition actions on if
-    //  required. There is also a parameter to control optimising the map build.
-    game.physics.p2.convertTilemap(map, layer);
+    sprite.body.setSize(16, 16, 8, 8);
 
-    //  Player
-    player = game.add.sprite(48, 48, 'player');
+    //  We'll set a lower max angular velocity here to keep it from going totally nuts
+    sprite.body.maxAngular = 500;
 
-    game.physics.p2.enable(player);
+    //  Apply a drag otherwise the sprite will just spin and never slow down
+    sprite.body.angularDrag = 50;
 
-    game.physics.p2.setBoundsToWorld(true, true, true, true, false);
+    game.camera.follow(sprite);
 
-    game.camera.follow(player);
-
-    //  Allow cursors to scroll around the map
     cursors = game.input.keyboard.createCursorKeys();
+}
 
-    var help = game.add.text(16, 16, 'Arrows to move', { font: '14px Arial', fill: '#ffffff' });
-    help.fixedToCamera = true;
+function hitCoin(sprite, tile) {
+    tile.alpha = 0.2; // make the tile fade out
+
+    layer.dirty = true;
+
+    return false;
 }
 
 function update() {
+    game.physics.arcade.collide(sprite, layer);
+
+    sprite.body.velocity.x = 0;
+    sprite.body.velocity.y = 0;
+    sprite.body.angularVelocity = 0;
 
     if (cursors.left.isDown) {
-        player.body.rotateLeft(100);
+        sprite.body.angularVelocity = -200;
     }
     else if (cursors.right.isDown) {
-        player.body.rotateRight(100);
-    }
-    else {
-        player.body.setZeroRotation();
+        sprite.body.angularVelocity = 200;
     }
 
     if (cursors.up.isDown) {
-        player.body.thrust(400);
+        game.physics.arcade.velocityFromAngle(sprite.angle, 200, sprite.body.velocity);
     }
-    else if (cursors.down.isDown) {
-        player.body.reverse(400);
-    }
-}
-
-function render() {
 }
