@@ -4,6 +4,6 @@
   "dependencies": {
     "almond": "~0.2.9",
     "phaser": "~v2.2.2",
-    "requirejs": "~2.1.14"
+    "requirejs": "~2.1.15"
   }
 }
