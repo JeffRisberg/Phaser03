@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser03',
+var game = new Phaser.Game(890, 600, Phaser.CANVAS, 'phaser03',
     {
         preload: preload,
         create: create,
@@ -8,6 +8,7 @@ var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser03',
 var map;
 var layer;
 
+var tower;
 var sprite;
 var cursors;
 
@@ -15,7 +16,8 @@ function preload() {
     game.load.tilemap('map', 'assets/tilemaps/maps/tile_collision_test.json', null, Phaser.Tilemap.TILED_JSON);
 
     game.load.image('ground_1x1', 'assets/tilemaps/tiles/ground_1x1.png');
-    game.load.image('phaser', 'assets/sprites/arrow.png');
+    game.load.image('arrow', 'assets/sprites/arrow.png');
+    game.load.image('tower', 'assets/sprites/tower.jpg');
 
     game.load.spritesheet('coin', 'assets/sprites/coin.png', 32, 32);
 }
@@ -35,9 +37,23 @@ function create() {
 
     layer = map.createLayer('Tile Layer 1');
 
-    layer.resizeWorld();
+    //layer.resizeWorld();
 
-    sprite = game.add.sprite(260, 100, 'phaser');
+    var style1 = { font: "11px Arial", fill: "#FFFFFF", align: "center" };
+    var style2 = { font: "16px Arial", fill: "#FFFFFF", align: "center" };
+
+    // Create tool for making Towers
+    tower = game.add.sprite(this.game.width - 70, this.game.height - 250, 'tower');
+    tower.inputEnabled = true;
+    tower.input.enableDrag();
+    tower.input.enableSnap(32, 32, true, true);
+    tower.events.onDragStop.add(addOneTower, this);
+    text = "Tower";
+    game.add.text(this.game.width - 50, this.game.height - 290, text, style1);
+    text = "$100";
+    game.add.text(this.game.width - 50, this.game.height - 275, text, style2);
+
+    sprite = game.add.sprite(260, 100, 'arrow');
     sprite.anchor.set(0.5);
     game.physics.enable(sprite);
 
@@ -52,6 +68,14 @@ function create() {
     game.camera.follow(sprite);
 
     cursors = game.input.keyboard.createCursorKeys();
+}
+
+// add a tower at the mouse position
+function addOneTower(sprite, pointer) {
+    var x = pointer.x;
+    var y = pointer.y;
+
+    console.log("adding a tower at " + x + " " + y);
 }
 
 function hitCoin(sprite, tile) {
