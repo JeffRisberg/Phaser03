@@ -7,6 +7,7 @@ var game = new Phaser.Game(890, 600, Phaser.CANVAS, 'phaser03',
 
 var map;
 var layer;
+var tileSize;
 
 var tower;
 var sprite;
@@ -36,6 +37,7 @@ function create() {
     map.setTileIndexCallback(3, hitCoin, this);
 
     layer = map.createLayer('Tile Layer 1');
+    tileSize = 32;
 
     //layer.resizeWorld();
 
