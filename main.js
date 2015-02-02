@@ -29,7 +29,7 @@ function create() {
     map = game.add.tilemap('map');
 
     map.addTilesetImage('ground_1x1');
-    map.addTilesetImage('tiles');
+    map.addTilesetImage('tiles', 'tiles');
 
     map.setCollisionBetween(1, 2);
 
@@ -73,8 +73,8 @@ function create() {
 
 // add a tower at the mouse position
 function addOneTower(sprite, pointer) {
-    var x = pointer.x;
-    var y = pointer.y;
+    var x = sprite.x + tileSize / 2;
+    var y = sprite.y + tileSize / 2;
 
     var xTile = Math.round(x / tileSize);
     var yTile = Math.round(y / tileSize);
@@ -86,16 +86,24 @@ function addOneTower(sprite, pointer) {
 }
 
 function hitCoin(sprite, tile) {
-    tile.alpha = 0.2; // make the tile fade out
+    var xTile = tile.x;
+    var yTile = tile.y;
 
+    console.log("hit Coin " + xTile + " " + yTile);
+
+    map.putTile(0, xTile, yTile);
     layer.dirty = true;
 
     return false;
 }
 
 function hitTower(sprite, tile) {
-    tile.alpha = 0.2; // make the tile fade out
+    var xTile = tile.x;
+    var yTile = tile.y;
 
+    console.log("hit Tower " + xTile + " " + yTile);
+
+    map.putTile(0, xTile, yTile);
     layer.dirty = true;
 
     return false;
