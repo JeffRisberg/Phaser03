@@ -19,7 +19,7 @@ function preload() {
 
     game.load.tilemap('map', 'assets/tilemaps/maps/tile_collision_test.json', null, Phaser.Tilemap.TILED_JSON);
 
-    game.load.image('ground_1x1', 'assets/tilemaps/tiles/ground_1x1.png');
+    game.load.spritesheet('ground', 'assets/tilemaps/tiles/ground.png', 32, 32);
     game.load.spritesheet('tiles', 'assets/tilemaps/tiles/tiles.png', 32, 32);
 }
 
@@ -28,10 +28,10 @@ function create() {
 
     map = game.add.tilemap('map');
 
-    map.addTilesetImage('ground_1x1');
+    map.addTilesetImage('ground', 'ground');
     map.addTilesetImage('tiles', 'tiles');
 
-    map.setCollisionBetween(1, 2);
+    map.setCollisionBetween(2, 3);
 
     map.setTileIndexCallback(3, hitCoin, this);
     map.setTileIndexCallback(4, hitTower, this);
@@ -49,9 +49,9 @@ function create() {
     tower.input.enableDrag();
     tower.events.onDragStop.add(addOneTower, this);
     text = "Tower";
-    game.add.text(this.game.width - 50, this.game.height - 290, text, style1);
+    game.add.text(this.game.width - 58, this.game.height - 290, text, style1);
     text = "$100";
-    game.add.text(this.game.width - 50, this.game.height - 275, text, style2);
+    game.add.text(this.game.width - 58, this.game.height - 275, text, style2);
 
     sprite = game.add.sprite(260, 100, 'arrow');
     sprite.anchor.set(0.5);
@@ -70,7 +70,7 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
 }
 
-// add a tower at the mouse position
+// Add a tower at the mouse position
 function addOneTower(sprite, pointer) {
     var x = sprite.x + tileSize / 2;
     var y = sprite.y + tileSize / 2;
@@ -90,7 +90,7 @@ function hitCoin(sprite, tile) {
 
     console.log("hit Coin " + xTile + " " + yTile);
 
-    map.putTile(0, xTile, yTile);
+    map.putTile(1, xTile, yTile);
     layer.dirty = true;
 
     return false;
@@ -102,7 +102,7 @@ function hitTower(sprite, tile) {
 
     console.log("hit Tower " + xTile + " " + yTile);
 
-    map.putTile(0, xTile, yTile);
+    map.putTile(1, xTile, yTile);
     layer.dirty = true;
 
     return false;
