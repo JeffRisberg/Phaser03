@@ -59,11 +59,11 @@
         },
         {
             "firstgid": 3,
-            "image": "..\/..\/sprites\/coin.png",
+            "image": "..\/tiles\/tiles.png",
             "imageheight": 32,
-            "imagewidth": 192,
+            "imagewidth": 64,
             "margin": 0,
-            "name": "coin",
+            "name": "tiles",
             "properties": {
             },
             "spacing": 0,

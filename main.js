@@ -14,13 +14,13 @@ var sprite;
 var cursors;
 
 function preload() {
-    game.load.tilemap('map', 'assets/tilemaps/maps/tile_collision_test.json', null, Phaser.Tilemap.TILED_JSON);
-
-    game.load.image('ground_1x1', 'assets/tilemaps/tiles/ground_1x1.png');
     game.load.image('arrow', 'assets/sprites/arrow.png');
     game.load.image('tower', 'assets/sprites/tower.jpg');
 
-    game.load.spritesheet('coin', 'assets/sprites/coin.png', 32, 32);
+    game.load.tilemap('map', 'assets/tilemaps/maps/tile_collision_test.json', null, Phaser.Tilemap.TILED_JSON);
+
+    game.load.image('ground_1x1', 'assets/tilemaps/tiles/ground_1x1.png');
+    game.load.spritesheet('tiles', 'assets/tilemaps/tiles/tiles.png', 32, 32);
 }
 
 function create() {
@@ -29,26 +29,25 @@ function create() {
     map = game.add.tilemap('map');
 
     map.addTilesetImage('ground_1x1');
-    map.addTilesetImage('coin');
+    map.addTilesetImage('tiles');
 
     map.setCollisionBetween(1, 2);
 
-    //  This will set Tile ID 26 (the coin) to call the hitCoin function when collided with
+    //  This will set Tile ID 3 (the coin) to call the hitCoin function when collided with
     map.setTileIndexCallback(3, hitCoin, this);
+    map.setTileIndexCallback(4, hitTower, this);
 
     layer = map.createLayer('Tile Layer 1');
     tileSize = 32;
-
-    //layer.resizeWorld();
 
     var style1 = { font: "11px Arial", fill: "#FFFFFF", align: "center" };
     var style2 = { font: "16px Arial", fill: "#FFFFFF", align: "center" };
 
     // Create tool for making Towers
+    game.add.sprite(this.game.width - 70, this.game.height - 250, 'tower');
     tower = game.add.sprite(this.game.width - 70, this.game.height - 250, 'tower');
     tower.inputEnabled = true;
     tower.input.enableDrag();
-    //tower.input.enableSnap(32, 32, true, true);
     tower.events.onDragStop.add(addOneTower, this);
     text = "Tower";
     game.add.text(this.game.width - 50, this.game.height - 290, text, style1);
@@ -80,13 +79,21 @@ function addOneTower(sprite, pointer) {
     var xTile = Math.round(x / tileSize);
     var yTile = Math.round(y / tileSize);
 
-    map.putTile(3, xTile, yTile);
+    map.putTile(4, xTile, yTile);
 
     sprite.x = game.width - 70;
     sprite.y = game.height - 250;
 }
 
 function hitCoin(sprite, tile) {
+    tile.alpha = 0.2; // make the tile fade out
+
+    layer.dirty = true;
+
+    return false;
+}
+
+function hitTower(sprite, tile) {
     tile.alpha = 0.2; // make the tile fade out
 
     layer.dirty = true;
