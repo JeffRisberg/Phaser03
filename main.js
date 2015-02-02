@@ -48,7 +48,7 @@ function create() {
     tower = game.add.sprite(this.game.width - 70, this.game.height - 250, 'tower');
     tower.inputEnabled = true;
     tower.input.enableDrag();
-    tower.input.enableSnap(32, 32, true, true);
+    //tower.input.enableSnap(32, 32, true, true);
     tower.events.onDragStop.add(addOneTower, this);
     text = "Tower";
     game.add.text(this.game.width - 50, this.game.height - 290, text, style1);
@@ -77,7 +77,13 @@ function addOneTower(sprite, pointer) {
     var x = pointer.x;
     var y = pointer.y;
 
-    console.log("adding a tower at " + x + " " + y);
+    var xTile = Math.round(x / tileSize);
+    var yTile = Math.round(y / tileSize);
+
+    map.putTile(3, xTile, yTile);
+
+    sprite.x = game.width - 70;
+    sprite.y = game.height - 250;
 }
 
 function hitCoin(sprite, tile) {
