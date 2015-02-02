@@ -33,7 +33,6 @@ function create() {
 
     map.setCollisionBetween(1, 2);
 
-    //  This will set Tile ID 3 (the coin) to call the hitCoin function when collided with
     map.setTileIndexCallback(3, hitCoin, this);
     map.setTileIndexCallback(4, hitTower, this);
 
@@ -43,7 +42,7 @@ function create() {
     var style1 = { font: "11px Arial", fill: "#FFFFFF", align: "center" };
     var style2 = { font: "16px Arial", fill: "#FFFFFF", align: "center" };
 
-    // Create tool for making Towers
+    // Create tool for making Towers (two sprites, with the top one being dragged around)
     game.add.sprite(this.game.width - 70, this.game.height - 250, 'tower');
     tower = game.add.sprite(this.game.width - 70, this.game.height - 250, 'tower');
     tower.inputEnabled = true;
