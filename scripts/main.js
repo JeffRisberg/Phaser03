@@ -52,7 +52,7 @@ function create() {
     var tool2 = game.add.sprite(0, 64, "tower");
     tools.addChild(tool2);
 
-    //tools.layout("vertical");
+    tools.layout("vertical");
 
     // Create tool for making Towers (two sprites, with the top one being dragged around)
     game.add.sprite(this.game.width - 70, this.game.height - 250, 'tower');
