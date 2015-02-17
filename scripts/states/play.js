@@ -7,7 +7,7 @@ define(['extensions/Container'], function (Container) {
     var layer;
     var tileSize;
 
-    var tools;
+    var tools, subtools;
     var tower;
     var sprite;
     var cursors;
@@ -50,7 +50,7 @@ define(['extensions/Container'], function (Container) {
 
             // Create example of a Container holding a set of buttons
             tools = new Container(this.game, null, Container.prototype.VERTICAL, 0, 2);
-            Container.prototype.reset(tools, this.game.width - 100, 10);
+            Container.prototype.reset(tools, this.game.width - 109, 10);
             game.world.add(tools);
 
             for (var i = 0; i < 5; i++) {
@@ -59,6 +59,15 @@ define(['extensions/Container'], function (Container) {
                 tool.height = 25;
                 tools.add(tool);
             }
+
+            subtools = new Container(this.game, null, Container.prototype.HORIZONTAL, 0, 2);
+            for (var i = 0; i < 2; i++) {
+                var tool = this.game.add.button(0, 0, 'button', this.actionOnClick, this, 2, 1, 0);
+                tool.width = 50;
+                tool.height = 25;
+                subtools.add(tool);
+            }
+            tools.add(subtools);
 
             Container.prototype.doLayout(tools);
 

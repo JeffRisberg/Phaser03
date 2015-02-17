@@ -27,6 +27,10 @@ define(['Phaser'], function (Phaser) {
                 child.x = x;
                 child.y = container.vGap;
 
+                if (child.__proto__ == Container.prototype) {
+                    Container.prototype.doLayout(child);
+                }
+
                 x += child.width + container.hGap;
                 if (child.height > maxHeight) maxHeight = child.height;
             });
@@ -40,6 +44,10 @@ define(['Phaser'], function (Phaser) {
             container.forEach(function (child) {
                 child.x = container.hGap;
                 child.y = y;
+
+                if (child.__proto__ == Container.prototype) {
+                    Container.prototype.doLayout(child);
+                }
 
                 y += child.height + container.vGap;
                 if (child.width > maxWidth) maxWidth = child.width;
@@ -59,7 +67,6 @@ define(['Phaser'], function (Phaser) {
         container.y = y;
         container.invalid = true;
     };
-
 
     return Container;
 });
