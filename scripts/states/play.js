@@ -21,6 +21,8 @@ define(['extensions/Container'], function (Container) {
             this.game.load.image('arrow', 'assets/sprites/arrow.png');
             this.game.load.image('tower', 'assets/sprites/tower.jpg');
 
+            this.game.load.spritesheet('button', 'assets/sprites/button_sprite_sheet.png', 70, 25);
+
             this.game.load.tilemap('map', 'assets/tilemaps/maps/map_data.json', null, Phaser.Tilemap.TILED_JSON);
 
             this.game.load.spritesheet('ground', 'assets/tilemaps/tiles/ground.png', 32, 32);
@@ -46,18 +48,17 @@ define(['extensions/Container'], function (Container) {
             var style1 = { font: "11px Arial", fill: "#FFFFFF", align: "center" };
             var style2 = { font: "16px Arial", fill: "#FFFFFF", align: "center" };
 
+            // Create example of a Container holding a set of buttons
             tools = new Container(this.game, null, Container.prototype.VERTICAL, 0, 2);
-            Container.prototype.reset(tools, this.game.width - 70, 10);
+            Container.prototype.reset(tools, this.game.width - 100, 10);
             game.world.add(tools);
 
-            var tool1 = game.add.sprite(0, 0, "tower");
-            tool1.width = 64;
-            tool1.height = 64;
-            tools.add(tool1);
-            var tool2 = game.add.sprite(0, 0, "tower");
-            tool2.width = 64;
-            tool2.height = 64;
-            tools.add(tool2);
+            for (var i = 0; i < 5; i++) {
+                var tool = this.game.add.button(0, 0, 'button', this.actionOnClick, this, 2, 1, 0);
+                tool.width = 70;
+                tool.height = 25;
+                tools.add(tool);
+            }
 
             Container.prototype.doLayout(tools);
 
@@ -125,6 +126,10 @@ define(['extensions/Container'], function (Container) {
             layer.dirty = true;
 
             return false;
+        },
+
+        actionOnClick: function (e) {
+            console.log(e);
         },
 
         update: function () {
