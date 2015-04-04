@@ -60,6 +60,7 @@ define(['extensions/Container'], function (Container) {
                 tools.add(tool);
             }
 
+            // Create subordinate container
             subtools = new Container(this.game, null, Container.prototype.HORIZONTAL, 0, 2);
             for (var i = 0; i < 2; i++) {
                 var tool = this.game.add.button(0, 0, 'button', this.actionOnClick, this, 2, 1, 0);
@@ -110,7 +111,7 @@ define(['extensions/Container'], function (Container) {
             map.putTile(4, xTile, yTile);
 
             sprite.x = game.width - 70;
-            sprite.y = game.height - 250;
+            sprite.y = game.height - 150;
         },
 
         hitCoin: function (sprite, tile) {
