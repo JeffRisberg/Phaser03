@@ -132,11 +132,17 @@ define(['extensions/Container'], function (Container) {
         },
 
         map1Click: function (e) {
+            player.reset(-100, -100);
+            player.body.enable = false;
+
             this.setupMap("map1");
             this.positionPlayer();
         },
 
         map2Click: function (e) {
+            player.reset(-100, -100);
+            player.body.enable = false;
+
             this.setupMap("map2");
             this.positionPlayer();
         },
@@ -183,16 +189,15 @@ define(['extensions/Container'], function (Container) {
                     var cell = map.getTile(x, y, layer, true);
 
                     if (cell.index == 1) {
-                        player.x = x * tileSize + tileSize / 2;
-                        player.y = y * tileSize + tileSize / 2;
-                        found = true;
+                        player.reset(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
                         player.dirty = true;
+                        found = true;
                     }
                 }
 
             this.game.world.bringToTop(player);
+            player.body.enable = true;
         }
-
     };
 
     return Play;
