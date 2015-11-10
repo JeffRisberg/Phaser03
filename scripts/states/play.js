@@ -6,11 +6,14 @@ define(['extensions/Container'], function (Container) {
     var map;
     var layer;
     var tileSize;
+    var towerTool;
 
-    var tools, subtools;
-    var tower;
-    var sprite;
+    var playerX, playerY;
+    var player;
+    var score;
+    var scoreText;
     var cursors;
+    var fx;
 
     function Play(_game) {
         game = _game;
@@ -18,86 +21,73 @@ define(['extensions/Container'], function (Container) {
 
     Play.prototype = {
         preload: function () {
-            this.game.load.image('arrow', 'assets/sprites/arrow.png');
+            this.game.load.image('player', 'assets/sprites/player.png');
             this.game.load.image('tower', 'assets/sprites/tower.jpg');
 
-            this.game.load.spritesheet('button', 'assets/sprites/button_sprite_sheet.png', 70, 25);
+            this.game.load.spritesheet('map1Button', 'assets/sprites/map1_button_sprite_sheet.png', 70, 25);
+            this.game.load.spritesheet('map2Button', 'assets/sprites/map2_button_sprite_sheet.png', 70, 25);
 
-            this.game.load.tilemap('map', 'assets/tilemaps/maps/map_data.json', null, Phaser.Tilemap.TILED_JSON);
+            this.game.load.tilemap('map1', 'assets/tilemaps/maps/map1_data.json', null, Phaser.Tilemap.TILED_JSON);
+            this.game.load.tilemap('map2', 'assets/tilemaps/maps/map2_data.json', null, Phaser.Tilemap.TILED_JSON);
 
             this.game.load.spritesheet('ground', 'assets/tilemaps/tiles/ground.png', 32, 32);
             this.game.load.spritesheet('tiles', 'assets/tilemaps/tiles/tiles.png', 32, 32);
+
+            this.game.load.audio('sfx', 'assets/audio/fx_mixdown.ogg');
         },
 
         create: function () {
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-            map = this.game.add.tilemap('map');
+            this.setupMap('map1');
 
-            map.addTilesetImage('ground', 'ground');
-            map.addTilesetImage('tiles', 'tiles');
-
-            map.setCollisionBetween(2, 3);
-
-            map.setTileIndexCallback(3, this.hitCoin, this);
-            map.setTileIndexCallback(4, this.hitTower, this);
-
-            layer = map.createLayer('Tile Layer 1');
-            tileSize = 32;
-
-            var style1 = { font: "11px Arial", fill: "#FFFFFF", align: "center" };
-            var style2 = { font: "16px Arial", fill: "#FFFFFF", align: "center" };
+            // Un-comment this on to see the collision tiles
+            //layer.debug = true;
 
             // Create example of a Container holding a set of buttons
-            tools = new Container(this.game, null, Container.prototype.VERTICAL, 0, 2);
-            Container.prototype.reset(tools, this.game.width - 109, 10);
-            game.world.add(tools);
+            var buttonBox = new Container(this.game, null, Container.prototype.VERTICAL, 0, 2);
+            Container.prototype.reset(buttonBox, this.game.width - 95, 10);
+            game.world.add(buttonBox);
 
-            for (var i = 0; i < 5; i++) {
-                var tool = this.game.add.button(0, 0, 'button', this.actionOnClick, this, 2, 1, 0);
-                tool.width = 70;
-                tool.height = 25;
-                tools.add(tool);
-            }
+            var button1 = this.game.add.button(0, 0, 'map1Button', this.map1Click, this, 2, 1, 0);
+            buttonBox.add(button1);
+            var button2 = this.game.add.button(0, 0, 'map2Button', this.map2Click, this, 2, 1, 0);
+            buttonBox.add(button2);
 
-            // Create subordinate container
-            subtools = new Container(this.game, null, Container.prototype.HORIZONTAL, 0, 2);
-            for (var i = 0; i < 2; i++) {
-                var tool = this.game.add.button(0, 0, 'button', this.actionOnClick, this, 2, 1, 0);
-                tool.width = 50;
-                tool.height = 25;
-                subtools.add(tool);
-            }
-            tools.add(subtools);
+            Container.prototype.doLayout(buttonBox);
 
-            Container.prototype.doLayout(tools);
+            var style1 = {font: "11px Arial", fill: "#FFFFFF", align: "center"};
+            var style2 = {font: "16px Arial", fill: "#FFFFFF", align: "center"};
 
             // Create tool for making Towers (two sprites, with the top one being dragged around)
-            game.add.sprite(this.game.width - 70, this.game.height - 150, 'tower');
-            tower = game.add.sprite(this.game.width - 70, this.game.height - 150, 'tower');
-            tower.inputEnabled = true;
-            tower.input.enableDrag();
-            tower.events.onDragStop.add(this.addOneTower, this);
+            game.add.sprite(this.game.width - 90, this.game.height - 150, 'tower');
+            towerTool = game.add.sprite(this.game.width - 90, this.game.height - 150, 'tower');
+            towerTool.inputEnabled = true;
+            towerTool.input.enableDrag();
+            towerTool.events.onDragStop.add(this.addOneTower, this);
             var text = "Tower";
-            game.add.text(this.game.width - 58, this.game.height - 190, text, style1);
+            game.add.text(this.game.width - 78, this.game.height - 190, text, style1);
             text = "$100";
-            game.add.text(this.game.width - 58, this.game.height - 175, text, style2);
+            game.add.text(this.game.width - 78, this.game.height - 175, text, style2);
 
-            sprite = game.add.sprite(260, 100, 'arrow');
-            sprite.anchor.set(0.5);
-            game.physics.enable(sprite);
+            player = game.add.sprite(260, 100, 'player');
+            game.physics.enable(player);
+            player.anchor.set(0.5);
 
-            sprite.body.setSize(16, 16, 8, 8);
+            player.body.setSize(31, 31, 0, 0);
 
-            //  We'll set a lower max angular velocity here to keep it from going totally nuts
-            sprite.body.maxAngular = 500;
+            this.positionPlayer();
 
-            //  Apply a drag otherwise the sprite will just spin and never slow down
-            sprite.body.angularDrag = 50;
+            game.camera.follow(player);
 
-            game.camera.follow(sprite);
+            score = 0;
+            scoreText = this.game.add.text(this.game.width - 82, this.game.height - 270, '' + score,
+                {font: "30px Arial", fill: "#fff", align: "center"});
 
             cursors = game.input.keyboard.createCursorKeys();
+
+            fx = game.add.audio('sfx');
+            fx.addMarker('ping', 10, 1.0);
         },
 
         // Add a tower at the mouse position
@@ -110,7 +100,7 @@ define(['extensions/Container'], function (Container) {
 
             map.putTile(4, xTile, yTile);
 
-            sprite.x = game.width - 70;
+            sprite.x = game.width - 90;
             sprite.y = game.height - 150;
         },
 
@@ -118,10 +108,12 @@ define(['extensions/Container'], function (Container) {
             var xTile = tile.x;
             var yTile = tile.y;
 
-            console.log("hit Coin " + xTile + " " + yTile);
-
             map.putTile(1, xTile, yTile);
             layer.dirty = true;
+            fx.play("ping");
+
+            score += 5;
+            scoreText.text = '' + score;
 
             return false;
         },
@@ -134,32 +126,73 @@ define(['extensions/Container'], function (Container) {
 
             map.putTile(1, xTile, yTile);
             layer.dirty = true;
+            fx.play("ping");
 
             return false;
         },
 
-        actionOnClick: function (e) {
-            console.log(e);
+        map1Click: function (e) {
+            this.setupMap("map1");
+            this.positionPlayer();
+        },
+
+        map2Click: function (e) {
+            this.setupMap("map2");
+            this.positionPlayer();
         },
 
         update: function () {
-            game.physics.arcade.collide(sprite, layer);
+            game.physics.arcade.collide(player, layer);
 
-            sprite.body.velocity.x = 0;
-            sprite.body.velocity.y = 0;
-            sprite.body.angularVelocity = 0;
-
-            if (cursors.left.isDown) {
-                sprite.body.angularVelocity = -200;
-            }
-            else if (cursors.right.isDown) {
-                sprite.body.angularVelocity = 200;
-            }
+            player.body.velocity.y = 0;
+            player.body.velocity.x = 0;
 
             if (cursors.up.isDown) {
-                game.physics.arcade.velocityFromAngle(sprite.angle, 200, sprite.body.velocity);
+                player.body.velocity.y -= 100;
             }
+            else if (cursors.down.isDown) {
+                player.body.velocity.y += 100;
+            }
+            if (cursors.left.isDown) {
+                player.body.velocity.x -= 100;
+            }
+            else if (cursors.right.isDown) {
+                player.body.velocity.x += 100;
+            }
+        },
+
+        setupMap: function (mapName) {
+            map = this.game.add.tilemap(mapName);
+
+            map.addTilesetImage('ground', 'ground');
+            map.addTilesetImage('tiles', 'tiles');
+
+            map.setCollisionBetween(2, 3);
+
+            map.setTileIndexCallback(3, this.hitCoin, this);
+            map.setTileIndexCallback(4, this.hitTower, this);
+
+            layer = map.createLayer('Tile Layer 1');
+            tileSize = 32;
+        },
+
+        positionPlayer: function () {
+            var found = false;
+            for (var x = 0; x < layer.layer.width && !found; x++)
+                for (var y = 0; y < layer.layer.height && !found; y++) {
+                    var cell = map.getTile(x, y, layer, true);
+
+                    if (cell.index == 1) {
+                        player.x = x * tileSize + tileSize / 2;
+                        player.y = y * tileSize + tileSize / 2;
+                        found = true;
+                        player.dirty = true;
+                    }
+                }
+
+            this.game.world.bringToTop(player);
         }
+
     };
 
     return Play;
