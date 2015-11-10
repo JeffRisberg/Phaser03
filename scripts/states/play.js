@@ -3,8 +3,8 @@ define(['extensions/Container'], function (Container) {
 
     var game;
 
-    var map;
-    var layer;
+    var map = null;
+    var layer = null;
     var tileSize;
     var towerTool;
 
@@ -168,6 +168,9 @@ define(['extensions/Container'], function (Container) {
         },
 
         setupMap: function (mapName) {
+            if (layer != null) layer.destroy();
+            if (map != null) map.destroy();
+
             map = this.game.add.tilemap(mapName);
 
             map.addTilesetImage('ground', 'ground');
@@ -179,6 +182,7 @@ define(['extensions/Container'], function (Container) {
             map.setTileIndexCallback(4, this.hitTower, this);
 
             layer = map.createLayer('Tile Layer 1');
+            layer.dirty = true;
             tileSize = 32;
         },
 
