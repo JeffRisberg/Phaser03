@@ -15,11 +15,11 @@ define(['extensions/Container'], function (Container) {
     var cursors;
     var fx;
 
-    function Play(_game) {
+    function PlayState(_game) {
         game = _game;
     }
 
-    Play.prototype = {
+    PlayState.prototype = {
         preload: function () {
             this.game.load.image('player', 'assets/sprites/player.png');
             this.game.load.image('tower', 'assets/sprites/tower.jpg');
@@ -204,5 +204,5 @@ define(['extensions/Container'], function (Container) {
         }
     };
 
-    return Play;
+    return PlayState;
 });
