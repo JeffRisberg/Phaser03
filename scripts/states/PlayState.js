@@ -1,5 +1,4 @@
 define(['extensions/Container'], function (Container) {
-
     'use strict';
 
     var game;
@@ -22,23 +21,23 @@ define(['extensions/Container'], function (Container) {
 
     PlayState.prototype = {
         preload: function () {
-            this.game.load.image('player', 'assets/sprites/player.png');
-            this.game.load.image('tower', 'assets/sprites/tower.jpg');
+            game.load.image('player', 'assets/sprites/player.png');
+            game.load.image('tower', 'assets/sprites/tower.jpg');
 
-            this.game.load.spritesheet('map1Button', 'assets/sprites/map1_button_sprite_sheet.png', 70, 25);
-            this.game.load.spritesheet('map2Button', 'assets/sprites/map2_button_sprite_sheet.png', 70, 25);
+            game.load.spritesheet('map1Button', 'assets/sprites/map1_button_sprite_sheet.png', 70, 25);
+            game.load.spritesheet('map2Button', 'assets/sprites/map2_button_sprite_sheet.png', 70, 25);
 
-            this.game.load.tilemap('map1', 'assets/tilemaps/maps/map1_data.json', null, Phaser.Tilemap.TILED_JSON);
-            this.game.load.tilemap('map2', 'assets/tilemaps/maps/map2_data.json', null, Phaser.Tilemap.TILED_JSON);
+            game.load.tilemap('map1', 'assets/tilemaps/maps/map1_data.json', null, Phaser.Tilemap.TILED_JSON);
+            game.load.tilemap('map2', 'assets/tilemaps/maps/map2_data.json', null, Phaser.Tilemap.TILED_JSON);
 
-            this.game.load.spritesheet('ground', 'assets/tilemaps/tiles/ground.png', 32, 32);
-            this.game.load.spritesheet('tiles', 'assets/tilemaps/tiles/tiles.png', 32, 32);
+            game.load.spritesheet('ground', 'assets/tilemaps/tiles/ground.png', 32, 32);
+            game.load.spritesheet('tiles', 'assets/tilemaps/tiles/tiles.png', 32, 32);
 
-            this.game.load.audio('sfx', 'assets/audio/fx_mixdown.ogg');
+            game.load.audio('sfx', 'assets/audio/fx_mixdown.ogg');
         },
 
         create: function () {
-            this.game.physics.startSystem(Phaser.Physics.ARCADE);
+            game.physics.startSystem(Phaser.Physics.ARCADE);
 
             this.setupMap('map1');
 

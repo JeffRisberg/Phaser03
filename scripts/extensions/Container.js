@@ -1,4 +1,6 @@
 define(['Phaser'], function (Phaser) {
+    'use strict'
+
     // Create our container extending Phaser.Group
     var Container = function (game, parent, direction, hGap, vGap) {
 

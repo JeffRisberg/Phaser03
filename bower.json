@@ -2,7 +2,6 @@
   "name": "phaser03",
   "private": true,
   "dependencies": {
-    "almond": "~0.2.9",
     "phaser": "~v2.4.4",
     "requirejs": "~2.1.20"
   }
