@@ -1,4 +1,5 @@
 define(['extensions/Container'], function (Container) {
+
     'use strict';
 
     var game;

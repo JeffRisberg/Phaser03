@@ -3,7 +3,6 @@
 requirejs.config({
     paths: {
         //libs
-        //almond: '../bower_components/almond/almond',
         phaser: '../bower_components/phaser/build/phaser.min'
     }
 });
